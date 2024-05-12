@@ -1,10 +1,16 @@
 #include<stdio.h>
 #include<stdlib.h>
 #define n 8
-int buffer[n], in = -1, out = -1, s = 1, empty = n, full = 0, itemp, itemc;
+int buffer [n];
+int in = -1;
+int out = -1;
+int s = 1;
+int itemp = 0;
+int itemc = 0;
+int empty = n;
+int full = 0;
 
-int wait(int s)
-{
+int wait(int s){
     s--;
     while(s < 0){
         s--;
@@ -12,118 +18,104 @@ int wait(int s)
     return s;
 }
 
-int signal(int s)
-{
+int signal(int s){
     s++;
     return s;
 }
 
-void producer()
-{
+void producer(){
     s = wait(s);
-    itemp = rand() % 100;
-    if(full == n)
-    {
+    if(full == n){
         printf("Buffer is full\n");
     }
-    else if(in == -1 && out == -1)
-    {
+    else if(in == -1 && out == -1){
         empty = wait(empty);
         in = 0;
         out = 0;
+        itemp++;
         buffer[in] = itemp;
-        printf("Produced item is : %d\n", itemp);
+        printf("Producer produces item %d\n", itemp);
         full = signal(full);
     }
-    else
-    {
+    else{
         empty = wait(empty);
         in = (in + 1) % n;
+        itemp++;
         buffer[in] = itemp;
-         printf("Produced item is : %d\n", itemp);
+        printf("Producer produces item %d\n", itemp);
         full = signal(full);
     }
     s = signal(s);
 }
 
-void consumer()
-{
-   s = wait(s);
-   if(in == -1 && out == -1)
-   {
-       printf("Buffer is empty\n");
-   }
-   else if(in == out)
-   {
+void consumer(){
+    s = wait(s);
+    if(in == -1 && out == -1){
+        printf("Buffer is empty\n");
+    }
+    else if(in == out){
         full = wait(full);
         itemc = buffer[out];
+        printf("Consumer consumes item %d\n", itemc);
         buffer[out] = -1;
         in = -1;
         out = -1;
-        printf("Consumed item is : %d\n", itemc);
         empty = signal(empty);
-   }
-   else
-   {
+    }
+    else{
         full = wait(full);
         itemc = buffer[out];
+        printf("Consumer consumes item %d\n", itemc);
         buffer[out] = -1;
         out = (out + 1) % n;
-        printf("Consumed item is : %d\n", itemc);
         empty = signal(empty);
-   }
-   s = signal(s);
+    }
+    s = signal(s);
 }
 
-void display()
-{
+void display(){
     int i;
-    if(in == -1)
-    {
+    if(in == -1 && out == -1){
         printf("Buffer is empty\n");
     }
-    else
-    {
-        for(i = 0 ; i < n ; i++)
-        {
-            if(buffer[i] == -1)
-            printf("-\t");
-            else
-            printf("%d\t", buffer[i]);
+    else{
+        for(i = 0; i < n; i++){
+            if(buffer[i] == -1){
+                printf("- ");
+            }
+            else{
+                printf("%d ", buffer[i]);
+            }
         }
-        printf("\n");    
+        printf("\n");
     }
 }
 
-
-int main()
-{
-    int i, option = 4;
-    for(i = 0 ; i < n ; i++){
+int main(){
+    int i;
+    for(i = 0; i < n; i++){
         buffer[i] = -1;
     }
-    do
-    {
-        printf("1. Produce  |  2. Consume  |  3. Display  |  4.Exit  : ");
-        scanf("%d", &option);
-        switch(option)
-        {
+    do{
+        printf("1.Producer | 2.Consumer | 3.Display | 4.Exit: ");
+        scanf("%d", &i);
+        switch(i){
             case 1:
-                producer();
-                break;
+            producer();
+            break;
             case 2:
-                consumer();
-                break;
+            consumer();
+            break;
             case 3:
-                display();
-                break;
+            display();
+            break;
             case 4:
-                printf("Exiting...\n");
-                break;
+            printf("Exiting...");
+            break;
             default:
-                printf("Invalid input. Try again\n");
-                break;
+            printf("Invalid input. Try again!\n");
+            break;
         }
-    }while(option != 4);
+    }while(i != 4);
     return 0;
 }
