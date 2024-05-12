@@ -2,7 +2,7 @@
 #include<stdlib.h>
 #define n 10
 
-void best_fit(int block[], int b, int process[], int p, int total_mem){
+void worst_fit(int block[], int b, int process[], int p, int total_mem){
     int allocated[p], i, j, mem = 0, x;
     for(i = 0; i < p; i++){
         allocated[i] = -1;
@@ -55,6 +55,6 @@ int main(){
     for(i = 0; i < p; i++){
         scanf("%d", &process[i]);
     }
-    best_fit(block, b, process, p, total_mem);
+    worst_fit(block, b, process, p, total_mem);
     return 0;
 }
